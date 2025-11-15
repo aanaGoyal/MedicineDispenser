@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Smart First Aid Kit</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        /* CSS is unchanged from your provided code, keeping it here for completeness */
+        :root {
+            --bg-color: linear-gradient(135deg, #e8fdf5, #eaf4ff);
+            --primary-text: #2a3d45;
+            --secondary-text: #5f7c85;
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --border-color: #d0e5eb;
+            --accent-main: #1f9ea8;
+            --accent-secondary: #2bc0e4;
+            --warning-color: #f97316;
+            --danger-color: #ef4444;
+            --success-color: #22c55e;
+            --shadow-light: 0 4px 12px rgba(0, 0, 0, 0.05);
+            --shadow-medium: 0 8px 20px rgba(0, 0, 0, 0.08);
+            --shadow-strong: 0 15px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-color);
+            background-size: 400% 400%;
+            animation: gradientShift 18s ease infinite;
+            margin: 0;
+            padding: 0;
+            color: var(--primary-text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(15px);
+            padding: 1.5rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-light);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+        }
+
+        header .logo h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--accent-secondary), var(--accent-main));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        header nav a {
+            color: var(--secondary-text);
+            text-decoration: none;
+            margin-left: 2rem;
+            font-weight: 600;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+        
+        header nav a::after {
+            content: "";
+            position: absolute;
+            left: 0; bottom: -4px;
+            width: 0; height: 3px;
+            background: var(--accent-main);
+            border-radius: 2px;
+            transition: width 0.3s ease-in-out;
+        }
+        
+        header nav a:hover { color: var(--accent-main); }
+        header nav a:hover::after { width: 100%; }
+
+        main {
+            padding: 8rem 3rem 3rem 3rem;
+        }
+        .alert {
+            border-radius: 12px;
+            font-weight: 500;
+            padding: 1rem;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .dashboard-container {
+            display: grid;
+            gap: 2.5rem;
+            grid-template-columns: 1fr;
+        }
+
+        @media (min-width: 992px) {
+            .dashboard-container {
+                grid-template-columns: repeat(3, 1fr);
+                grid-template-areas:
+                    "stats stats stats"
+                    "notifications activity usage";
+            }
+
+            .row:nth-child(1) {
+                grid-area: stats;
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 2.5rem;
+            }
+
+            .notifications-panel { grid-area: notifications; }
+            .activity-panel { grid-area: activity; }
+            .usage-panel { grid-area: usage; }
+        }
+
+        .card, .panel {
+            background: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: var(--shadow-medium);
+            border: 1px solid var(--border-color);
+            padding: 2.5rem;
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+
+        .card.stat-card:hover, .panel:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-strong);
+        }
+
+        .card.stat-card {
+            border-left: 8px solid var(--accent-main);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .card.stat-card.warning { border-color: var(--warning-color); }
+        .card.stat-card.danger { border-color: var(--danger-color); }
+
+        .card.stat-card.warning .icon, .card.stat-card.warning p { color: var(--warning-color); }
+        .card.stat-card.danger .icon, .card.stat-card.danger p { color: var(--danger-color); }
+
+        .card.status-card h2, .panel h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-text);
+            margin-bottom: 1rem;
+        }
+        
+        .card.stat-card h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0;
+            color: var(--primary-text);
+        }
+
+        .card.stat-card p {
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-top: 0.5rem;
+            color: var(--accent-main);
+        }
+        
+        .card.stat-card .icon {
+            font-size: 2.5rem;
+            color: var(--accent-secondary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .status-indicator {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            margin-right: 0.75rem;
+            display: inline-block;
+        }
+        
+        .status-indicator.online { background-color: var(--success-color); }
+        .status-indicator.offline { background-color: var(--danger-color); }
+        
+        .panel h3 .fas {
+            margin-right: 0.75rem;
+            color: var(--accent-secondary);
+        }
+        
+        .panel ul, .panel table {
+            width: 100%;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .panel li {
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .panel li:last-child { border-bottom: none; }
+        
+        .panel p.no-data {
+            text-align: center;
+            color: var(--secondary-text);
+            font-style: italic;
+            padding: 2rem 0;
+        }
+        
+        .panel th, .panel td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .panel th {
+            font-weight: 600;
+            color: var(--secondary-text);
+        }
+        
+        /* Responsive */
+        @media (max-width: 991px) {
+            header { padding: 1rem 1.5rem; }
+            header nav { display: none; }
+            .dashboard-container > .row:nth-child(1) {
+                display: flex;
+                flex-direction: column;
+                gap: 2rem;
+            }
+            .row > .card, .panel {
+                margin-bottom: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <h1>First-Aid Kit Dashboard</h1>
+        </div>
+        <nav>
+            <a href="{% url 'dashboard' %}">Dashboard</a>
+            <a href="{% url 'medicines_list' %}">Medicines List</a>
+            <a href="{% url 'profile_view' %}">View Profile</a>
+            <a href="{% url 'logout' %}">Logout</a>
+        </nav>
+    </header>
+    <main>
+        {% if messages %}
+            <div class="messages-container">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" onclick="this.parentElement.style.display='none';" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        <div class="container">
+            <div class="dashboard-container">
+                <div class="row">
+                    <div class="card status-card">
+    <h2>System Status</h2>
+    <div class="d-flex align-items-center mb-2">
+        <span class="status-indicator {{ esp32_status.status|lower }}"></span>
+        <p><strong>ESP32:</strong> {{ esp32_status.status }}</p>
+    </div>
+    <p class="text-muted"><small>Last Ping: {{ esp32_status.last_ping|date:"M d, Y P" }}</small></p>
+
+    <hr>
+    <h5>📟 Sensor Value: <strong>{{ sensor_value }}</strong></h5>
+
+    <div class="mt-3">
+        <button class="btn btn-success" onclick="toggleLed(1)">Turn ON LED</button>
+        <button class="btn btn-danger" onclick="toggleLed(0)">Turn OFF LED</button>
+    </div>
+</div>
+
+
+                    <div class="card stat-card">
+                        <i class="fas fa-pills icon"></i>
+                        <h3>Total Medicines</h3>
+                        <p>{{ total_medicines }}</p>
+                    </div>
+                    
+                    <div class="card stat-card warning">
+                        <i class="fas fa-exclamation-triangle icon"></i>
+                        <h3>Low Stock</h3>
+                        <p>{{ low_stock_count }}</p>
+                    </div>
+                    
+                    <div class="card stat-card danger">
+                        <i class="fas fa-calendar-times icon"></i>
+                        <h3>Expired Items</h3>
+                        <p>{{ expired_count }}</p>
+                    </div>
+                </div>
+
+                <div class="panel notifications-panel">
+                    <h3><i class="fas fa-bell"></i> Recent Notifications</h3>
+                    {% if notifications %}
+                    <ul>
+                        {% for notif in notifications %}
+                        <li class="notification-item">
+                            <strong>{{ notif.message }}</strong> 
+                            <small class="text-muted d-block mt-1">{{ notif.created_at|timesince }} ago</small>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p class="no-data">No new notifications.</p>
+                    {% endif %}
+                </div>
+
+                <div class="panel activity-panel">
+                    <h3><i class="fas fa-history"></i> Recent Activity</h3>
+                    {% if recent_logs %}
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>User</th>
+                                <th>Action/Description</th> <th>Status</th> </tr>
+                        </thead>
+                        <tbody>
+                            {% for log in recent_logs %}
+                            <tr>
+                                <td>{{ log.timestamp|date:"M d, Y H:i" }}</td>
+                                <td>{{ log.user.username }}</td>
+                                <td>{{ log.action }}</td> <td>
+                                    <span class="badge rounded-pill {% if log.success %}bg-success{% else %}bg-danger{% endif %}">
+                                        {% if log.success %}Success{% else %}Failure{% endif %}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <p class="no-data">No recent activity logs.</p>
+                    {% endif %}
+                </div>
+
+                <div class="panel usage-panel">
+                    <h3><i class="fas fa-chart-bar"></i> Top 5 Most Used (Last 30 Days)</h3>
+                    {% if usage_stats %}
+                    <ul>
+                        {% for stat in usage_stats %}
+                        <li>{{ stat.medicine__name }}: <strong>{{ stat.total_used }}</strong> units used</li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p class="no-data">No usage data for the last 30 days.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+function toggleLed(state) {
+    fetch(`/toggle-led/?state=${state}`)
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                alert(`LED turned ${state == 1 ? 'ON' : 'OFF'}`);
+            } else {
+                alert('Failed to send command');
+            }
+        })
+        .catch(() => alert('Connection error'));
+}
+
+// Optional: auto-refresh sensor every 5 seconds
+setInterval(() => {
+    window.location.reload();
+}, 5000);
+</script>
+
+</body>
+</html>

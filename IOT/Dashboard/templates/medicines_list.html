@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Medicines - Smart First Aid Kit{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* CSS Variables and Global Styles */
+        :root {
+            --bg-color: linear-gradient(135deg, #e8fdf5, #eaf4ff);
+            --primary-text: #2a3d45;
+            --secondary-text: #5f7c85;
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --border-color: #d0e5eb;
+            --accent-main: #1f9ea8;
+            --accent-secondary: #2bc0e4;
+            --warning-color: #f97316;
+            --danger-color: #ef4444;
+            --success-color: #22c55e;
+            --shadow-light: 0 4px 12px rgba(0, 0, 0, 0.05);
+            --shadow-medium: 0 8px 20px rgba(0, 0, 0, 0.08);
+            --shadow-strong: 0 15px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        /* General Body and Layout */
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-color);
+            background-size: 400% 400%;
+            animation: gradientShift 18s ease infinite;
+            margin: 0;
+            padding: 0;
+            color: var(--primary-text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(15px);
+            padding: 1.5rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-light);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--accent-secondary), var(--accent-main));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        header nav a {
+            color: var(--secondary-text);
+            text-decoration: none;
+            margin-left: 2rem;
+            font-weight: 600;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        header nav a::after {
+            content: "";
+            position: absolute;
+            left: 0; bottom: -4px;
+            width: 0; height: 3px;
+            background: var(--accent-main);
+            border-radius: 2px;
+            transition: width 0.3s ease-in-out;
+        }
+
+        header nav a:hover { color: var(--accent-main); }
+        header nav a:hover::after { width: 100%; }
+
+        /* Main Content Area */
+        main {
+            padding: 8rem 3rem 3rem 3rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Cards and Panels */
+        .card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: var(--shadow-medium);
+            border: 1px solid var(--border-color);
+            padding: 2.5rem;
+            margin-bottom: 2.5rem;
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-strong);
+        }
+        
+        .flex-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .flex-container h2 {
+            font-size: 2rem;
+            color: var(--primary-text);
+            font-weight: 700;
+            margin: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .flex-container h2 i {
+            color: var(--accent-secondary);
+            margin-right: 0.75rem;
+        }
+
+        /* Form Styles */
+        .form-section {
+            background-color: transparent;
+            border: none;
+            box-shadow: none;
+            padding: 0;
+            margin-bottom: 2rem;
+        }
+        
+        .form-row {
+            display: flex;
+            align-items: flex-end;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            background-color: var(--card-bg);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: var(--shadow-medium);
+            border: 1px solid var(--border-color);
+        }
+
+        .form-field {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .form-field label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--secondary-text);
+            margin-bottom: 0.75rem;
+        }
+
+        .form-control,
+        .form-select {
+            width: 100%;
+            padding: 0.85rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 1rem;
+            color: var(--primary-text);
+            background-color: white;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: var(--accent-secondary);
+            box-shadow: 0 0 0 3px rgba(43, 192, 228, 0.2);
+        }
+
+        /* Buttons */
+        .btn-custom {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-primary-custom { background-color: var(--accent-main); color: white; }
+        .btn-success-custom { background-color: var(--success-color); color: white; }
+        .btn-outline-secondary-custom { background-color: transparent; border: 1px solid var(--border-color); color: var(--secondary-text); }
+
+        .btn-primary-custom:hover { background-color: #1a7a81; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(31, 158, 168, 0.2); }
+        .btn-success-custom:hover { background-color: #14803d; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(34, 197, 94, 0.2); }
+        .btn-outline-secondary-custom:hover { background-color: #f0f4f7; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); }
+
+        .btn-lg { padding: 1rem 2rem; font-size: 1.125rem; }
+        .btn-submit { width: 100%; text-align: center; }
+
+        /* Medicine Table */
+        .medicine-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .medicine-table th,
+        .medicine-table td {
+            text-align: left;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .medicine-table th {
+            background-color: #f7fafd;
+            font-weight: 600;
+            color: var(--secondary-text);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .medicine-table tr:hover { background-color: #fbfdff; }
+
+        /* Status Badges */
+        .badge {
+            padding: 0.6em 1.2em;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border-radius: 50px;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .badge-danger { background-color: var(--danger-color); }
+        .badge-warning { background-color: var(--warning-color); }
+        .badge-expiring { background-color: #f59e0b; }
+        .badge-out-of-stock { background-color: var(--secondary-text); }
+        .badge-good { background-color: var(--success-color); }
+
+        /* Modal Pop-up */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: auto;
+            padding: 2rem;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: var(--shadow-strong);
+            text-align: center;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-content h3 { margin-top: 0; font-size: 1.8rem; color: var(--primary-text); }
+        .modal-buttons { display: flex; justify-content: space-around; margin-top: 1.5rem; gap: 1rem; }
+
+        /* Custom Alerts for Messages */
+        .messages-container { max-width: 1400px; margin: 0 auto 2rem; }
+        .alert {
+            padding: 1.25rem 2rem;
+            margin-bottom: 1.5rem;
+            border-radius: 12px;
+            position: relative;
+            font-size: 1rem;
+            font-weight: 500;
+            color: white;
+        }
+
+        .alert-success { background-color: var(--success-color); }
+        .alert-danger { background-color: var(--danger-color); }
+        .alert-warning { background-color: var(--warning-color); }
+
+        .btn-close {
+            position: absolute;
+            top: 10px; right: 10px;
+            color: white;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+        .btn-close:hover { opacity: 1; }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>First-Aid Kit Dashboard</h1>
+        <nav>
+            <a href="{% url 'dashboard' %}">Dashboard</a>
+            <a href="{% url 'medicines_list' %}">Medicines List</a>
+            <a href="{% url 'profile_view' %}">View Profile</a>
+            <a href="{% url 'logout' %}">Logout</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="flex-container">
+                <h2><i class="fas fa-pills me-2"></i>Medicine Inventory</h2>
+                {% if user.is_authenticated and user.is_staff %}
+                <a href="{% url 'add_medicine' %}" class="btn btn-primary-custom btn-custom">
+                    <i class="fas fa-plus me-2"></i>Add Medicine
+                </a>
+                {% endif %}
+            </div>
+
+            {% if messages %}
+            <div class="messages-container">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="form-section">
+                <form method="GET" class="form-row">
+                    <div class="form-field">
+                        <label class="form-label">Search</label>
+                        <input type="text" class="form-control" name="search" value="{{ search_query }}" placeholder="Search medicines...">
+                    </div>
+                    <div class="form-field">
+                        <label class="form-label">Category</label>
+                        <select class="form-select" name="category">
+                            <option value="">All Categories</option>
+                            {% for category in categories %}
+                            <option value="{{ category }}" {% if category == category_filter %}selected{% endif %}>
+                                {{ category }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label class="form-label">Stock Status</label>
+                        <select class="form-select" name="stock">
+                            <option value="">All</option>
+                            <option value="low" {% if stock_filter == 'low' %}selected{% endif %}>Low Stock</option>
+                            <option value="expired" {% if stock_filter == 'expired' %}selected{% endif %}>Expired
+                            </option>
+                        </select>
+                    </div>
+                    <div class="form-field" style="flex: 0 0 auto;">
+                        <button type="submit" class="btn btn-primary-custom btn-custom">
+                            <i class="fas fa-search"></i> Filter
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <form id="medicineRequestForm" method="post" action="{% url 'request_medicines' %}">
+                {% csrf_token %}
+                <div class="card">
+                    <table class="medicine-table">
+                        <thead>
+                            <tr>
+                                <th>Select</th>
+                                <th>Name</th>
+                                <th>Category</th>
+                                <th>Dosage</th>
+                                <th>Quantity</th>
+                                <th>Expiry Date</th>
+                                <th>Status</th>
+                                <!-- <th>Actions</th> -->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for medicine in page_obj %}
+                            <tr>
+                                <td data-label="Select">
+                                    {% if medicine.quantity > 0 and not medicine.is_expired %}
+                                    <input type="checkbox" name="medicines" value="{{ medicine.id }}">
+                                    {% else %}
+                                    <input type="checkbox" disabled>
+                                    {% endif %}
+                                </td>
+                                <td data-label="Name">{{ medicine.name }}</td>
+                                <td data-label="Category">{{ medicine.category }}</td>
+                                <td data-label="Dosage">{{ medicine.dosage }}</td>
+                                <td data-label="Quantity">{{ medicine.quantity }}</td>
+                                <td data-label="Expiry Date"
+                                    class="{% if medicine.is_expired %}text-danger{% elif medicine.days_until_expiry <= 30 %}text-warning{% endif %}">
+                                    {{ medicine.expiry_date }}
+                                </td>
+                                <td data-label="Status">
+                                    {% if medicine.is_expired %}
+                                    <span class="badge badge-danger">Expired</span>
+                                    {% elif medicine.quantity == 0 %}
+                                    <span class="badge badge-out-of-stock">Out of Stock</span>
+                                    {% elif medicine.days_until_expiry <= 30 and medicine.days_until_expiry >= 0 %}
+                                    <span class="badge badge-warning">Expiring Soon</span>
+                                    {% else %}
+                                    <span class="badge badge-good">Good</span>
+                                    {% endif %}
+                                </td>
+                                <!-- <td data-label="Actions">
+                                    <a href="#" class="btn btn-sm btn-primary-custom">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="#" class="btn btn-sm btn-outline-secondary-custom">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                </td> -->
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="8" class="no-data text-center py-5">
+                                    <i class="fas fa-pills fa-3x text-muted mb-3"></i>
+                                    <h5 class="text-muted">No medicines found</h5>
+                                    <p class="text-muted">Try adjusting your search criteria or add some medicines to
+                                        the inventory.</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <button type="button" id="confirmRequestBtn" class="btn btn-success-custom btn-custom btn-lg btn-submit">
+                    <i class="fas fa-paper-plane me-2"></i> Submit Request
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <div id="confirmationModal" class="modal">
+        <div class="modal-content">
+            <h3>Confirm Request</h3>
+            <p>Are you sure you want to request the selected medicines?</p>
+            <div class="modal-buttons">
+                <button id="cancelBtn" class="btn-custom btn-outline-secondary-custom">Cancel</button>
+                <button id="submitBtn" class="btn-custom btn-success-custom">Yes, Request</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const confirmRequestBtn = document.getElementById('confirmRequestBtn');
+            const confirmationModal = document.getElementById('confirmationModal');
+            const cancelBtn = document.getElementById('cancelBtn');
+            const submitBtn = document.getElementById('submitBtn');
+            const medicineRequestForm = document.getElementById('medicineRequestForm');
+
+            // Event listener for the "Submit Request" button
+            confirmRequestBtn.addEventListener('click', function () {
+                const selectedCheckboxes = document.querySelectorAll('input[name="medicines"]:checked');
+                if (selectedCheckboxes.length > 0) {
+                    // Show the modal if at least one medicine is selected
+                    confirmationModal.style.display = 'flex';
+                } else {
+                    alert('Please select at least one medicine to request.');
+                }
+            });
+
+            // Event listener for the "Cancel" button in the modal
+            cancelBtn.addEventListener('click', function () {
+                confirmationModal.style.display = 'none';
+            });
+
+            // Event listener for the "Yes, Request" button in the modal
+            submitBtn.addEventListener('click', function () {
+                // Submit the form when confirmed
+                medicineRequestForm.submit();
+            });
+
+            // Close the modal if the user clicks outside of it
+            window.addEventListener('click', function (event) {
+                if (event.target === confirmationModal) {
+                    confirmationModal.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
