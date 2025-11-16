@@ -13,6 +13,4 @@ urlpatterns = [
     path('iot/confirm/', views.handle_iot_confirmation, name='handle_iot_confirmation'),
     path('iot/ping/', views.esp32_ping, name='esp32_ping'),
     # path("dispense/<str:medicine_name>/", views.dispense_medicine, name="dispense_medicine"),
-    path('toggle-led/', views.toggle_led, name='toggle_led'),
-    # path('verify_face/', views.verify_face, name='verify_face'),
 ]
